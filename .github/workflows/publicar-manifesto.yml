@@ -1,0 +1,41 @@
+name: Publicar manifesto de atualização
+on:
+  release:
+    types: [published]
+permissions:
+  contents: write
+concurrency:
+  group: apoena-updates
+  cancel-in-progress: false
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - name: Baixar exatamente um APK da Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          TAG: ${{ github.event.release.tag_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/apoena-apk
+          gh release download "$TAG" --repo "$REPOSITORY" --pattern '*.apk' --dir /tmp/apoena-apk
+          test "$(find /tmp/apoena-apk -maxdepth 1 -type f -name '*.apk' | wc -l)" -eq 1
+          apk="$(find /tmp/apoena-apk -maxdepth 1 -type f -name '*.apk' -print -quit)"
+          python3 tools/gerar_manifest_release.py --apk "$apk" --tag "$TAG" --out updates/latest.json
+      - name: Atualizar o manifesto na branch main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add updates/latest.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "release: atualiza URL e hash SHA-256 do APK"
+          git pull --rebase origin main
+          git push origin main
