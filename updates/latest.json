@@ -1,7 +1,7 @@
 {
   "version": "0.3.1-alpha",
-  "notes": "Canal oficial preparado. Ainda não existe APK Release assinado publicado.",
-  "release_url": "https://github.com/apoenalore/ApoenaBrowser-Updates/releases",
-  "apk_url": "",
-  "sha256": ""
+  "notes": "Apoena Browser 0.3.1-alpha — APK oficial assinado.",
+  "release_url": "https://github.com/apoenalore/ApoenaBrowser-Updates/releases/tag/v0.3.1-alpha",
+  "apk_url": "https://github.com/apoenalore/ApoenaBrowser-Updates/releases/download/v0.3.1-alpha/APOENABROWSER.apk",
+  "sha256": "e503f153ae933fba7878220c339a8949150ceacf256c49b6af41514841b3258b"
 }
